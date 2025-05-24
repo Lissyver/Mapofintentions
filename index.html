@@ -31,12 +31,21 @@
 
         #map {
             width: 90%;
-            max-width: 800px;
-            height: 500px;
+            max-width: 1000px; /* Manteniendo el tamaño grande del contenedor */
             margin: 20px auto;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Estilo para la imagen del mapa dentro del div#map */
+        #map img {
+            max-width: 100%; /* Asegura que la imagen no desborde el contenedor */
+            height: auto; /* Mantiene la proporción de la imagen */
+            display: block; /* Elimina espacio extra debajo de la imagen */
         }
 
         #name-form {
@@ -66,7 +75,6 @@
             margin-bottom: 15px;
             background-color: #f9f9f9;
             border-radius: 5px;
-            /* Añadido para que el scroll empiece desde abajo (más recientes) */
             display: flex;
             flex-direction: column-reverse;
         }
@@ -130,12 +138,8 @@
     </div>
 
     <div id="map">
-        <script type="text/javascript" id="mapmyvisitors" src="//mapmyvisitors.com/map.js?d=xwJ5l1gZ19TkR0os_eYELZUKLRHvGP9NaLkH9bZxq6A&cl=ffffff&w=a"></script>
-    </div>
-
-    <div class="banner-container">
-        <a href="https://clicks.pipaffiliates.com/c?m=131353&amp;c=1024465" referrerpolicy="no-referrer-when-downgrade">
-            <img src="https://ads.pipaffiliates.com/i/131353?c=1024465" width="300" height="250" referrerpolicy="no-referrer-when-downgrade"/>
+        <a href="https://clustrmaps.com/site/1c67y" title="ClustrMaps">
+            <img src="//www.clustrmaps.com/map_v2.png?d=AKYmQtlmoOTyeZoqduFd1ehxK9tjixnNAA9z_CMXaHo&cl=ffffff" width="800" height="400">
         </a>
     </div>
 
@@ -167,24 +171,21 @@
             return false;
         }
 
-        // MODIFICADO: Función para cargar todas las intenciones y mostrarlas en orden inverso
         function loadIntenciones() {
             const storedIntenciones = localStorage.getItem('worldIntentions');
             if (storedIntenciones) {
                 intentions = JSON.parse(storedIntenciones);
-                document.getElementById("messages").innerHTML = ''; // Limpiar el chatbox
+                document.getElementById("messages").innerHTML = ''; 
                 
-                // Iterar las intenciones en orden inverso para que los últimos aparezcan primero
                 for (let i = intentions.length - 1; i >= 0; i--) {
                     const item = intentions[i];
                     if (!containsForbiddenWords(item.intention)) {
-                        addMessageToChat(item.name, item.intention, true); // Pasar 'true' para indicar que es carga inicial
+                        addMessageToChat(item.name, item.intention, true);
                     }
                 }
             } else {
                 intentions = [];
             }
-            // Asegurarse de que el scroll esté al final (donde están los mensajes más recientes)
             const messagesContainer = document.getElementById("messages");
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
@@ -193,7 +194,6 @@
             localStorage.setItem('worldIntentions', JSON.stringify(intentions));
         }
 
-        // MODIFICADO: Función para añadir mensajes al chat, considerando el orden
         function addMessageToChat(name, intention, prepend = false) {
             const container = document.getElementById("messages");
             const p = document.createElement("p");
@@ -201,16 +201,12 @@
             p.innerHTML = `<strong>${name}</strong>: ${intention} `;
 
             if (prepend) {
-                // Si es una carga inicial, añadir al principio (para que los últimos estén arriba)
                 container.prepend(p);
             } else {
-                // Si es un nuevo mensaje, añadir al final (para que el nuevo mensaje aparezca arriba en la vista invertida)
                 container.appendChild(p);
             }
-            // Mantiene el scroll al final, lo que en una columna invertida significa mostrar lo más nuevo
-            container.scrollTop = container.srollHeight; 
+            container.scrollTop = container.scrollHeight; 
         }
-
 
         async function addIntention() {
             const nameInput = document.getElementById("name-input-field");
@@ -238,13 +234,10 @@
                 const lat = data.latitude;
                 const lon = data.longitude;
 
-                // Añadir la nueva intención al array global (siempre al final para mantener el orden cronológico)
                 intentions.push({ name: name, intention: intention, lat: lat, lon: lon, timestamp: new Date().toISOString() });
                 saveIntenciones();
 
-                // Añadir el nuevo mensaje directamente al DOM. No necesitamos `loadIntenciones()` aquí
-                // porque ya estamos manipulando el `flex-direction`.
-                addMessageToChat(name, intention, false); // No prepend, añadir al final para que aparezca "arriba" en la vista inversa
+                addMessageToChat(name, intention, false);
 
                 messageInput.value = '';
             } catch (error) {
@@ -273,3 +266,4 @@
     </script>
 </body>
 </html>
+        
